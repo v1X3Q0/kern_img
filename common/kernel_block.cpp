@@ -4,15 +4,12 @@
 #include <ibeSet.h>
 #include <bgrep_e.h>
 
-#ifdef LIVE_KERNEL
-#include <krw_util.h>
-#endif
-
 #include "kernel_block.h"
 
-
+#ifdef LIVE_KERNEL
+#include <krw_util.h>
+#else
 // only for live kernel definitions
-#ifndef LIVE_KERNEL
 int kernel_block::live_kern_addr(size_t target_kernel_address, size_t size_kernel_buf, void** out_live_addr)
 {
     int result = -1;
