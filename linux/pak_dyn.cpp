@@ -10,7 +10,7 @@
 #include <ibeSet.h>
 #include <localUtil.h>
 
-#include <krw_util.h>
+// #include <krw_util.h>
 
 #include "kern_dynamic.h"
 

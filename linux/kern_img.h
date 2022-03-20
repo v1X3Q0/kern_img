@@ -7,22 +7,15 @@
 // generic linux kernel functionality, these are the parts that are backwards
 // compatible with live kernels and non live kernels
 
-class kern_img : public kernel_block
+class kernel_linux : public kernel_block
 {
 protected:
-    using kernel_block::kernel_block;
     size_t ksyms_count;
-    std::vector<std::pair<std::string, Elf64_Shdr*>> sect_list;
-
-    // generic grab routines
-    int grab_sinittext();
-
-    // generic base routines
-    int base_inits();
-    int base_ksymtab();
 
 public:
+    using kernel_block::kernel_block;
     virtual void insert_section(std::string sec_name, uint64_t sh_offset, uint64_t sh_size) = 0;
+    // virtual int kcrc_index(std::string symbol, uint32_t* kcrc);
 
     int findKindInKstr(const char* newString, int* index);
 

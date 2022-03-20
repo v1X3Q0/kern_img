@@ -4,7 +4,9 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <ibeSet.h>
+#include <bgrep_e.h>
+#include <localUtil.h>
+// #include <ibeSet.h>
 
 #define KSYM_V(GLOBAL) \
     kern_sym_map[ # GLOBAL ]
@@ -50,7 +52,6 @@ typedef struct named_kmap
 
 class kernel_block
 {
-private:
 public:
     size_t resolveRel(size_t rebase);
     // under the condition that we have a live kernel, translation routine.
@@ -104,6 +105,13 @@ public:
     }
 
 protected:
+    // private constructors for internal use only
+    kernel_block(uint32_t* binBegin_a) : binBegin((size_t)binBegin_a), live_kernel(true) {};
+    // not live kernel constructors, we have the size and such
+    kernel_block(uint32_t* binBegin_a, size_t kern_sz_a) {};
+    // kernel_block(uint32_t* binBegin_a, size_t kern_sz_a) : binBegin((size_t)binBegin_a), kern_sz((size_t)kern_sz_a), live_kernel(false) {};
+    kernel_block(const char* kern_file) {};
+
     bool live_kernel;
     size_t binBegin;
     size_t kern_sz;
@@ -121,13 +129,6 @@ protected:
     int volatile_map(size_t kva, size_t kv_size, void** virt_ret, bool volatile_op);
     int volatile_free(size_t kva, void* virt_used, bool volatile_op);
 #endif
-
-
-    // private constructors for internal use only
-    kernel_block(uint32_t* binBegin_a) : binBegin((size_t)binBegin_a), live_kernel(true) {};
-    // not live kernel constructors, we have the size and such
-    kernel_block(uint32_t* binBegin_a, size_t kern_sz_a) : binBegin((size_t)binBegin_a), kern_sz((size_t)kern_sz_a), live_kernel(false) {};
-    kernel_block(const char* kern_file);
 
     // virtual int ksym_dlsym(const char* newString, size_t* out_address);
     virtual int parseAndGetGlobals() = 0;

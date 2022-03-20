@@ -6,9 +6,7 @@
 
 #include "kernel_block.h"
 
-#ifdef LIVE_KERNEL
-#include <krw_util.h>
-#else
+#ifndef LIVE_KERNEL
 // only for live kernel definitions
 int kernel_block::live_kern_addr(size_t target_kernel_address, size_t size_kernel_buf, void** out_live_addr)
 {

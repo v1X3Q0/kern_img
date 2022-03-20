@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include <kernel_block.h>
+#include <localUtil.h>
 
 #include "kern_img.h"
 
@@ -15,7 +16,7 @@ typedef uint32_t u32;
 // for now i'm commenting out the enabled checkks, cause really its fairly
 // arbitrary what i do with the kall_syms_offsets, since its relative to
 // the base of the kernel itself. I may just grab the binBegin and add that.
-unsigned long kern_img::kallsyms_sym_address(int idx)
+unsigned long kernel_linux::kallsyms_sym_address(int idx)
 {
 	const unsigned long* kallsyms_addresses = (unsigned long*)KSYM_V(kallsyms_addresses);
 	const int* kallsyms_offsets = (int*)KSYM_V(kallsyms_offsets);
@@ -41,7 +42,7 @@ unsigned long kern_img::kallsyms_sym_address(int idx)
  * if uncompressed string is too long (>= maxlen), it will be truncated,
  * given the offset to where the symbol is in the compressed stream.
  */
-unsigned int kern_img::kallsyms_expand_symbol(unsigned int off,
+unsigned int kernel_linux::kallsyms_expand_symbol(unsigned int off,
 					   char *result, size_t maxlen)
 {
 	int len, skipped_first = 0;
@@ -124,7 +125,7 @@ static inline unsigned long module_kallsyms_lookup_name(const char *name)
 }
 
 /* Lookup the address for this symbol. Returns 0 if not found. */
-unsigned long kern_img::kallsyms_lookup_name(const char *name)
+unsigned long kernel_linux::kallsyms_lookup_name(const char *name)
 {
 	char namebuf[KSYM_NAME_LEN];
 	unsigned long i;

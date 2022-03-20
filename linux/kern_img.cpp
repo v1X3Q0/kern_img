@@ -4,7 +4,7 @@
 
 #include "kern_img.h"
 
-int kern_img::findKindInKstr(const char* newString, int* index)
+int kernel_linux::findKindInKstr(const char* newString, int* index)
 {
     const char* strIter = 0;
     named_kmap_t* ksymstrSec = 0;
