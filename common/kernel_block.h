@@ -130,8 +130,9 @@ protected:
     int volatile_free(size_t kva, void* virt_used, bool volatile_op);
 #endif
 
-    // virtual int ksym_dlsym(const char* newString, size_t* out_address);
+    virtual int ksym_dlsym(const char* newString, size_t* out_address) = 0;
     virtual int parseAndGetGlobals() = 0;
+    virtual void insert_section(std::string sec_name, uint64_t sh_offset, uint64_t sh_size) = 0;
 
     std::map<std::string, size_t> kern_sym_map;
     std::map<std::string, size_t> kern_off_map;
