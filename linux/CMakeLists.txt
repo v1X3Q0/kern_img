@@ -1,5 +1,5 @@
 project(kern_linux)
-add_library(${PROJECT_NAME} STATIC kern_img.cpp pak_dyn.cpp
+add_library(${PROJECT_NAME} STATIC kern_img.cpp kern_dynamic.cpp
     pak_kallsym.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ../common)

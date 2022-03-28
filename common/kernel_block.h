@@ -104,6 +104,10 @@ public:
         return result;
     }
 
+    virtual int ksym_dlsym(const char* newString, size_t* out_address) = 0;
+    virtual int parseAndGetGlobals() = 0;
+    virtual void insert_section(std::string sec_name, uint64_t sh_offset, uint64_t sh_size) = 0;
+
 protected:
     // private constructors for internal use only
     kernel_block(uint32_t* binBegin_a) : binBegin((size_t)binBegin_a), live_kernel(true) {};
@@ -122,17 +126,20 @@ protected:
     std::map<std::string, named_kmap_t*> named_alloc_list;
 
 #ifdef LIVE_KERNEL
+    // set the offsets for generic kernel pointer types that are shared among all kernels
+    void set_known_offsets();
+    virtual void target_set_known_offsets() = 0;
+
+    // map kernel block, result map in kmap_ret
     int map_kernel_block(std::string block_name, size_t kva, size_t kb_size, named_kmap_t** kmap_ret);
     int consolidate_kmap_allocation(size_t kva, size_t kb_size, real_kmap_t** kmap_ret);
     int map_save_virt(size_t kva, size_t kb_size, void** virt_ret);
 
     int volatile_map(size_t kva, size_t kv_size, void** virt_ret, bool volatile_op);
     int volatile_free(size_t kva, void* virt_used, bool volatile_op);
-#endif
 
-    virtual int ksym_dlsym(const char* newString, size_t* out_address) = 0;
-    virtual int parseAndGetGlobals() = 0;
-    virtual void insert_section(std::string sec_name, uint64_t sh_offset, uint64_t sh_size) = 0;
+    // virtual int grab_kernel_offsets() = 0;
+#endif
 
     std::map<std::string, size_t> kern_sym_map;
     std::map<std::string, size_t> kern_off_map;

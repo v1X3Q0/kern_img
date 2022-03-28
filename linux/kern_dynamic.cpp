@@ -198,4 +198,4 @@ fail:
     return result;
 }
 
-#endif
+#endif // LIVE_KERNEL

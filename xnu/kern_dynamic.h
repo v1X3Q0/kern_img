@@ -13,10 +13,9 @@ public:
 
 private:
     using kernel_xnu::kernel_xnu;
-
+    void target_set_known_offsets();
     // task strut offsets, for now its easier for us to just assume this routine
     // is for dynamic only.
-    int grab_task_struct_offs();
 
 };
 

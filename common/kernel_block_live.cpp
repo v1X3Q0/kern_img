@@ -9,6 +9,12 @@
 
 #include <krw_util.h>
 
+void kernel_block::set_known_offsets()
+{
+    kern_off_map["list_entry.next"] = 0;
+    kern_off_map["list_entry.prev"] = sizeof(size_t);
+}
+
 int kernel_block::live_kern_addr(size_t target_kernel_address, size_t size_kernel_buf, void** out_live_addr)
 {
     int result = -1;
@@ -18,7 +24,10 @@ int kernel_block::live_kern_addr(size_t target_kernel_address, size_t size_kerne
     SAFE_BAIL(newKernelAddress == 0);
     SAFE_BAIL(kRead(newKernelAddress, size_kernel_buf, (size_t)target_kernel_address) == -1);
 
-    *out_live_addr = newKernelAddress;
+    if (out_live_addr != 0)
+    {
+        *out_live_addr = newKernelAddress;
+    }
 
     result = 0;
     goto finish;
@@ -56,8 +65,7 @@ int kernel_block::consolidate_kmap_allocation(size_t kva, size_t kb_size, real_k
                 // region 1 is encompassed, insert our new named block
                 if ((kva + kb_size) <= (cur_kva + cur_ksz))
                 {
-                    *kmap_ret = *i;
-                    (*kmap_ret)->ref_counter++;
+                    real_alloc_save = *i;
                     goto finish;
                 }
                 // there is an overlap, realloc, copy and break;
@@ -106,7 +114,7 @@ int kernel_block::consolidate_kmap_allocation(size_t kva, size_t kb_size, real_k
     real_alloc_save->kva = new_kbase;
     real_alloc_save->alloc_size = new_alloc_sz;
     real_alloc_save->alloc_base = (uint8_t*)new_alloc;
-    real_alloc_save->ref_counter++;
+    // real_alloc_save->ref_counter++;
 
     // if no collisions, then we have a new region, so proceed to allocate it and
     // map the kernel memory.
@@ -199,6 +207,11 @@ int kernel_block::consolidate_kmap_allocation(size_t kva, size_t kb_size, real_k
 
 finish:
     result = 0;
+    if (kmap_ret != 0)
+    {
+        *kmap_ret = real_alloc_save;
+        real_alloc_save->ref_counter++;
+    }
 fail:
 
     return result;
@@ -224,7 +237,7 @@ int kernel_block::map_kernel_block(std::string block_name, size_t kva, size_t kb
     real_kmap_t* real_alloc_save = 0;
 
     // if we are able to find the section already, then just return the block
-    if (named_alloc_list.find(block_name) == named_alloc_list.end())
+    if (named_alloc_list.find(block_name) != named_alloc_list.end())
     {
         *kmap_ret = named_alloc_list[block_name];
         goto finish;
