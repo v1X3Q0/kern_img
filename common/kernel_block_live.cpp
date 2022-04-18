@@ -1,4 +1,3 @@
-#ifdef LIVE_KERNEL
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -289,5 +288,3 @@ int kernel_block::volatile_free(size_t kva, void* virt_used, bool volatile_op)
     }
     return 0;
 }
-
-#endif // LIVE_KERNEL

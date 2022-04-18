@@ -1,22 +1,21 @@
 project(kernel_block)
 
-add_library(${PROJECT_NAME} STATIC kernel_block.cpp
-    kernel_block_live.cpp)
-
-target_include_directories(${PROJECT_NAME} PRIVATE
+set(LOCAL_INCLUDES
     ${ANDROID_TOOL_BASE}/common/local_util
     ${ANDROID_TOOL_BASE}/common/bgrep_c
     ${ANDROID_TOOL_BASE}/common/c_reginst
-    )
+)
 
-if (DEFINED LIVE_KERNEL)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE
-        LIVE_KERNEL=${LIVE_KERNEL})
-    target_include_directories(${PROJECT_NAME} PRIVATE
-        ${ANDROID_TOOL_BASE}/common/krw_util/krw_util
-        ${ANDROID_TOOL_BASE}/linux/rwDrv/include)
-    if (ARCH STREQUAL "arm64")
-        target_include_directories(${PROJECT_NAME} PRIVATE
-            ${ANDROID_TOOL_BASE}/common/hde_armv8)
-    endif()
+if (ARCH STREQUAL "arm64" OR ARCH STREQUAL "arm64e")
+    list(APPEND LOCAL_INCLUDES ${ANDROID_TOOL_BASE}/common/hde_armv8)
 endif()
+
+add_library(${PROJECT_NAME} STATIC kernel_block.cpp)
+add_library(${PROJECT_NAME}_live STATIC kernel_block_live.cpp)
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${LOCAL_INCLUDES})
+target_include_directories(${PROJECT_NAME}_live PRIVATE ${LOCAL_INCLUDES})
+
+target_include_directories(${PROJECT_NAME}_live PRIVATE
+    ${ANDROID_TOOL_BASE}/common/krw_util/krw_util
+    ${ANDROID_TOOL_BASE}/linux/rwDrv/include)

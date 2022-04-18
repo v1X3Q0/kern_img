@@ -11,6 +11,9 @@
 class kernel_xnu : public kernel_block
 {
 protected:
+    // task strut offsets, for now its easier for us to just assume this routine
+    // is for dynamic only.
+    void target_set_known_offsets();
 
 public:
     using kernel_block::kernel_block;

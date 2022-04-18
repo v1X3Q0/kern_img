@@ -11,12 +11,15 @@ public:
     int parseAndGetGlobals();
     void insert_section(std::string sec_name, uint64_t sh_offset, uint64_t sh_size);
 
-private:
-    using kernel_xnu::kernel_xnu;
-    void target_set_known_offsets();
-    // task strut offsets, for now its easier for us to just assume this routine
-    // is for dynamic only.
+    kern_dynamic(uint32_t* binBegin_a);
 
+private:
+    kernel_xnu* syskern_static;
+
+    // optionally, keep a pointer to a static image to use
+    // if we are on a target where we can use the system
+    // kernel for symbols that we don't want to find with
+    // heuristics.
 };
 
 #endif

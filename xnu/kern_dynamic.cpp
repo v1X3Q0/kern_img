@@ -1,17 +1,38 @@
-#ifdef LIVE_KERNEL
-
 #include <string>
 #include <mach-o/loader.h>
 #include <mach/mach.h>
+#include <TargetConditionals.h>
 
 #include <localUtil.h>
 #include <localUtil_xnu.h>
 // #include <krw_util.h>
 #include "kern_dynamic.h"
+#include "kern_static.h"
+
+kern_dynamic::kern_dynamic(uint32_t* binBegin_a) : kernel_xnu(binBegin_a)
+{
+#if TARGET_OS_OSX
+    syskern_static = kernel_block::allocate_kern_img<kern_static>("/System/Library/Kernels/kernel.release.t8101");
+#endif
+}
 
 int kern_dynamic::ksym_dlsym(const char* newString, size_t* out_address)
 {
-    return 0;
+    int result = -1;
+    size_t symtmp = 0;
+
+    FINISH_IF(kern_sym_fetch(newString, &symtmp) == 0);
+    SAFE_BAIL(syskern_static == 0);
+    SAFE_BAIL(syskern_static->ksym_dlsym(newString, &symtmp) == -1);
+
+finish:
+    if (out_address != 0)
+    {
+        *out_address = symtmp;
+    }
+    result = 0;
+fail:
+    return result;
 }
 
 int kern_dynamic::parseAndGetGlobals()
@@ -33,18 +54,7 @@ fail:
     return result;
 }
 
-void kern_dynamic::target_set_known_offsets()
-{
-    kern_off_map["proc.p_list"] = 0;
-    kern_off_map["proc.task"] = sizeof(void*) * 2;
-    
-    // temporary set to get around offsets and stuff
-    kern_off_map["proc.p_pid"] = 0x44;
-}
-
 void kern_dynamic::insert_section(std::string sec_name, uint64_t sh_offset, uint64_t sh_size)
 {
     map_kernel_block(sec_name, sh_offset, sh_size, NULL);
 }
-
-#endif // LIVE_KERNEL

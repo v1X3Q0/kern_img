@@ -8,6 +8,12 @@
 #include <localUtil.h>
 // #include <ibeSet.h>
 
+#define SAFE_LIVEKERN(x) \
+    if (live_kernel == true) \
+    { \
+        x; \
+    }
+
 #define KSYM_V(GLOBAL) \
     kern_sym_map[ # GLOBAL ]
 
@@ -55,7 +61,6 @@ class kernel_block
 public:
     size_t resolveRel(size_t rebase);
     // under the condition that we have a live kernel, translation routine.
-    int live_kern_addr(size_t target_kernel_address, size_t size_kernel_buf, void** out_live_addr);
 
     int kernel_search(search_set* getB, size_t img_var, size_t img_var_sz, bool volatile_region, void** out_img_off);
     int kernel_search(search_set* getB, size_t img_var, size_t img_var_sz, void** out_img_off);
@@ -67,7 +72,7 @@ public:
     int check_kmap(std::string kmap_name, named_kmap_t** named_kmap_out);
 
     int kstruct_offset(std::string kstruct_name, size_t* kstruct_off_out);
-    size_t kern_sym_fetch(std::string in_symname) { return kern_off_map[in_symname]; };
+    int kern_sym_fetch(std::string kstruct_name, size_t* kstruct_off_out);
 
     // to be used for actual construction
     template <typename kern_dist>
@@ -112,7 +117,7 @@ protected:
     // private constructors for internal use only
     kernel_block(uint32_t* binBegin_a) : binBegin((size_t)binBegin_a), live_kernel(true) {};
     // not live kernel constructors, we have the size and such
-    kernel_block(uint32_t* binBegin_a, size_t kern_sz_a) {};
+    kernel_block(uint32_t* binBegin_a, size_t kern_sz_a) : binBegin((size_t)binBegin_a), kern_sz(kern_sz_a) {};
     // kernel_block(uint32_t* binBegin_a, size_t kern_sz_a) : binBegin((size_t)binBegin_a), kern_sz((size_t)kern_sz_a), live_kernel(false) {};
     kernel_block(const char* kern_file) {};
 
@@ -125,7 +130,6 @@ protected:
     // meanwhile, this is for tracking allocations, so that a request can be done quickly
     std::map<std::string, named_kmap_t*> named_alloc_list;
 
-#ifdef LIVE_KERNEL
     // set the offsets for generic kernel pointer types that are shared among all kernels
     void set_known_offsets();
     virtual void target_set_known_offsets() = 0;
@@ -134,12 +138,12 @@ protected:
     int map_kernel_block(std::string block_name, size_t kva, size_t kb_size, named_kmap_t** kmap_ret);
     int consolidate_kmap_allocation(size_t kva, size_t kb_size, real_kmap_t** kmap_ret);
     int map_save_virt(size_t kva, size_t kb_size, void** virt_ret);
+    int live_kern_addr(size_t target_kernel_address, size_t size_kernel_buf, void** out_live_addr);
 
     int volatile_map(size_t kva, size_t kv_size, void** virt_ret, bool volatile_op);
     int volatile_free(size_t kva, void* virt_used, bool volatile_op);
 
     // virtual int grab_kernel_offsets() = 0;
-#endif
 
     std::map<std::string, size_t> kern_sym_map;
     std::map<std::string, size_t> kern_off_map;
