@@ -6,6 +6,8 @@
 #include <localUtil.h>
 #include <localUtil_xnu.h>
 // #include <krw_util.h>
+#include <kernel_resolver.h>
+
 #include "kern_dynamic.h"
 #include "kern_static.h"
 
@@ -20,10 +22,12 @@ int kern_dynamic::ksym_dlsym(const char* newString, size_t* out_address)
 {
     int result = -1;
     size_t symtmp = 0;
+    named_kmap_t* mh_base = 0;
 
     FINISH_IF(kern_sym_fetch(newString, &symtmp) == 0);
     SAFE_BAIL(syskern_static == 0);
-    SAFE_BAIL(syskern_static->ksym_dlsym(newString, &symtmp) == -1);
+    SAFE_BAIL(check_kmap("mach_header", &mh_base) == -1);
+    SAFE_BAIL(resolve_live_symbol((struct mach_header_64*)syskern_static->get_binbegin(), (struct mach_header_64*)mh_base->alloc_base, newString, (void**)&symtmp) == -1);
 
 finish:
     if (out_address != 0)
