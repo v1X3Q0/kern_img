@@ -68,4 +68,3 @@ size_t kernel_block::resolveRel(size_t rebase)
 {
     return rebase - binBegin;
 }
-
