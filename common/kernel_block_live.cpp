@@ -150,7 +150,7 @@ int kernel_block::consolidate_kmap_allocation(size_t kva, size_t kb_size, real_k
         for (auto j = current_kmap->child_list.begin(); j != current_kmap->child_list.end(); j++)
         {
             named_kmap_t* current_named = *j;
-            current_named->alloc_base = (uint8_t*)(
+            current_named->kmap_stats.alloc_base = (uint8_t*)(
             // first the offset into the old allocation
                 (current_named->kva - current_kmap->kva) +
             // add that to the base difference to the new allocation
@@ -251,8 +251,8 @@ int kernel_block::map_kernel_block(std::string block_name, size_t kva, size_t kb
     SAFE_BAIL(consolidate_kmap_allocation(kva, kb_size, &real_alloc_save) == -1);
     named_alloc_save = (named_kmap_t*)calloc(1, sizeof(named_kmap_t));
     named_alloc_save->kva = kva;
-    named_alloc_save->alloc_size = kb_size;
-    named_alloc_save->alloc_base = (kva - real_alloc_save->kva) + real_alloc_save->alloc_base;
+    named_alloc_save->kmap_stats.alloc_size = kb_size;
+    named_alloc_save->kmap_stats.alloc_base = (kva - real_alloc_save->kva) + real_alloc_save->alloc_base;
     // 3 different inserts to track for new named object: track
     // its real allocator owner, have the map that tracks the pull and
     // add to the allocators tracking child list

@@ -47,12 +47,17 @@ typedef struct real_kmap
     size_t ref_counter;
 } real_kmap_t;
 
-typedef struct named_kmap 
+typedef struct
 {
     std::string alloc_name;
-    size_t kva;
     uint8_t* alloc_base;
     size_t alloc_size;
+} kmap_block_t;
+
+typedef struct named_kmap 
+{
+    kmap_block_t kmap_stats;
+    size_t kva;
     real_kmap_t* owner;
 } named_kmap_t;
 
@@ -62,6 +67,7 @@ public:
     size_t resolveRel(size_t rebase);
     // under the condition that we have a live kernel, translation routine.
 
+    bool is_live_kernel() { return live_kernel; };
     int kernel_search(search_set* getB, size_t img_var, size_t img_var_sz, bool volatile_region, void** out_img_off);
     int kernel_search(search_set* getB, size_t img_var, size_t img_var_sz, void** out_img_off);
 
@@ -70,9 +76,12 @@ public:
     size_t get_kernimg_sz() { return kern_sz; };
     size_t get_binbegin() { return binBegin; };
     int check_kmap(std::string kmap_name, named_kmap_t** named_kmap_out);
+    int check_kmap_force(std::string kmap_name, named_kmap_t** named_kmap_out);
 
     int kstruct_offset(std::string kstruct_name, size_t* kstruct_off_out);
     int kern_sym_fetch(std::string kstruct_name, size_t* kstruct_off_out);
+
+    int kern_sym_insert(std::string ksym_name, size_t symaddr);
 
     // to be used for actual construction
     template <typename kern_dist>
@@ -133,6 +142,8 @@ protected:
     // set the offsets for generic kernel pointer types that are shared among all kernels
     void set_known_offsets();
     virtual void target_set_known_offsets() = 0;
+    virtual int dyn_kmap_find(std::string kmap_nanme, named_kmap_t** block_out) = 0;
+
 
     // map kernel block, result map in kmap_ret
     int map_kernel_block(std::string block_name, size_t kva, size_t kb_size, named_kmap_t** kmap_ret);

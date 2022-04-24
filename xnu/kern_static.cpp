@@ -9,7 +9,15 @@
 
 int kern_static::ksym_dlsym(const char* newString, size_t* out_address)
 {
-    return find_symbol((struct mach_header_64*)binBegin, newString, (void**)out_address);
+    int result = -1;
+
+    FINISH_IF(kern_sym_fetch(newString, out_address) == 0);
+    SAFE_BAIL(find_symbol((struct mach_header_64*)binBegin, newString, (void**)out_address) == -1);
+
+finish:
+    result = 0;
+fail:
+    return result;
 }
 
 int kern_static::insert_sections()
@@ -45,4 +53,16 @@ int kern_static::insert_sections()
 
 int kern_static::parseAndGetGlobals()
 {
+    struct mach_header_64* mach_header_tmp = (struct mach_header_64*)binBegin;
+    struct thread_command* ut_com = 0;
+    _STRUCT_ARM_THREAD_STATE64* tregs = 0;
+    size_t targ_pc = 0;
+
+    getloadcommandfrommach(mach_header_tmp, LC_UNIXTHREAD, (struct load_command**)&ut_com);
+    tregs = (_STRUCT_ARM_THREAD_STATE64*)&ut_com[1];
+
+    targ_pc = tregs->__pc;
+    kern_sym_insert("_start", targ_pc);
+
+    return 0;
 }

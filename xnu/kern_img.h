@@ -14,6 +14,7 @@ protected:
     // task strut offsets, for now its easier for us to just assume this routine
     // is for dynamic only.
     void target_set_known_offsets();
+    int dyn_kmap_find(std::string kmap_nanme, named_kmap_t** block_out);
 
 public:
     using kernel_block::kernel_block;

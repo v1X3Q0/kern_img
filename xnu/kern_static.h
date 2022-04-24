@@ -13,6 +13,9 @@ public:
     void insert_section(std::string sec_name, uint64_t sh_offset, uint64_t sh_size) {};
     int insert_sections();
 
+    std::map<std::string, size_t>* kern_sym_map_fetch() { return &kern_sym_map; };
+    std::map<std::string, size_t>* kern_off_map_fetch()  { return &kern_off_map; };
+
 private:
     using kernel_xnu::kernel_xnu;
     // task strut offsets, for now its easier for us to just assume this routine

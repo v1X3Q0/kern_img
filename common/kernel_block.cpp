@@ -17,6 +17,12 @@ fail:
     return result;
 }
 
+int kernel_block::kern_sym_insert(std::string ksym_name, size_t symaddr)
+{
+    kern_sym_map[ksym_name] = symaddr;
+    return 0;
+}
+
 int kernel_block::kstruct_offset(std::string kstruct_name, size_t* kstruct_off_out)
 {
     int result = -1;
@@ -39,6 +45,26 @@ int kernel_block::check_kmap(std::string kmap_name, named_kmap_t** named_kmap_ou
     {
         *named_kmap_out = kmap_saved->second;
     }
+    result = 0;
+fail:
+    return result;
+}
+
+int kernel_block::check_kmap_force(std::string kmap_name, named_kmap_t** named_kmap_out)
+{
+    int result = 0;
+    named_kmap_t* found_block = 0;
+
+    if (live_kernel == false)
+    {
+        SAFE_BAIL(check_kmap(kmap_name, named_kmap_out) == -1);
+        SAFE_BAIL(dyn_kmap_find(kmap_name, &found_block) == -1);
+    }
+    else
+    {
+
+    }
+
     result = 0;
 fail:
     return result;
