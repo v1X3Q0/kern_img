@@ -82,6 +82,7 @@ public:
     int kern_sym_fetch(std::string kstruct_name, size_t* kstruct_off_out);
 
     int kern_sym_insert(std::string ksym_name, size_t symaddr);
+    int kern_off_insert(std::string koff_name, size_t offval);
 
     // to be used for actual construction
     template <typename kern_dist>

@@ -215,6 +215,10 @@ finish:
         *kmap_ret = real_alloc_save;
         real_alloc_save->ref_counter++;
     }
+    if (new_alloc != 0)
+    {
+        kmap_list.push_back(real_alloc_save);
+    }
 fail:
 
     return result;

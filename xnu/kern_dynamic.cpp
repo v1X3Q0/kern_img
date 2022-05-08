@@ -7,6 +7,7 @@
 #include <localUtil_xnu.h>
 // #include <krw_util.h>
 #include <kernel_resolver.h>
+#include <xnu_dyn_offset.h>
 
 #include "kern_dynamic.h"
 #include "kern_static.h"
@@ -57,11 +58,11 @@ int kern_dynamic::ksym_dlsym(const char* newString, size_t* out_address)
     SAFE_BAIL(dresolve_live_symbol(newString, (void**)&symtmp) == -1);
 
 finish:
+    result = 0;
     if (out_address != 0)
     {
         *out_address = symtmp;
     }
-    result = 0;
 fail:
     return result;
 }
@@ -97,6 +98,8 @@ int kern_dynamic::parseAndGetGlobals()
 #ifdef TARGET_OS_OSX
     register_statics();
 #endif
+
+    dyn_offsets(this);
 
     result = 0;
 fail:

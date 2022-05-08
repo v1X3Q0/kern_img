@@ -1,5 +1,6 @@
 #include "kern_img.h"
 #include <mach-o/loader.h>
+#include <xnu_types.h>
 
 void kernel_xnu::target_set_known_offsets()
 {
@@ -18,6 +19,30 @@ void kernel_xnu::target_set_known_offsets()
     
     kern_off_map["posix_cred.cr_uid"] = 0;
     kern_off_map["posix_cred.cr_ruid"] = sizeof(uid_t);
+
+    kern_off_map["ptov_table_entry_t.pa"] = offsetof(ptov_table_entry, pa);
+    kern_off_map["ptov_table_entry_t.va"] = offsetof(ptov_table_entry, va);
+    kern_off_map["ptov_table_entry_t.len"] = offsetof(ptov_table_entry, len);
+
+    kern_off_map["pmap_t.tte"] = offsetof(pmap, tte);
+    kern_off_map["pmap_t.ttep"] = offsetof(pmap, ttep);
+    kern_off_map["pmap_t.min"] = offsetof(pmap, min);
+    kern_off_map["pmap_t.max"] = offsetof(pmap, max);
+    kern_off_map["pmap_t.pmap_pt_attr"] = offsetof(pmap, pmap_pt_attr);
+
+    kern_off_map["ipc_space.is_table"] = 0x20;
+
+    kern_off_map["ipc_entry.size"] = 0x18;
+
+    kern_off_map["ipc_entry.ie_object"] = 0;
+
+    kern_off_map["ipc_port.ip_messages"] = 0x20;
+
+    kern_off_map["ipc_mqueue.imq_messages"] = 0;
+
+    kern_off_map["ipc_kmsg_queue.ikmq_base"] = 0;
+
+    kern_off_map["ipc_kmsg.ikm_header"] = 0x18;
 }
 
 int kernel_xnu::dyn_kmap_find(std::string kmap_nanme, named_kmap_t** block_out)
@@ -31,6 +56,7 @@ int kernel_xnu::dyn_kmap_find(std::string kmap_nanme, named_kmap_t** block_out)
     std::string curblock_name = "";
     int command_index = 0;
     int sec_index = 0;
+    size_t kernel_address_equiv = 0;
 
     if (live_kernel == true)
     {
@@ -48,20 +74,41 @@ int kernel_xnu::dyn_kmap_find(std::string kmap_nanme, named_kmap_t** block_out)
     {
         if (lc_iter->cmd == LC_SEGMENT_64)
         {
+            lc_seg_tmp = (struct segment_command_64*)lc_iter;
+            lc_sec_tmp = (struct section_64*)&lc_seg_tmp[1];
+
             curblock_name = lc_seg_tmp->segname;
             if (curblock_name == kmap_nanme)
             {
+                if (live_kernel == true)
+                {
+                    kernel_address_equiv = lc_seg_tmp->vmaddr;
+                }
+                else
+                {
+                    kernel_address_equiv = lc_seg_tmp->fileoff + binBegin;
+                }
                 insert_section(curblock_name,
-                    lc_seg_tmp->fileoff + binBegin, lc_seg_tmp->filesize);
+                    kernel_address_equiv, lc_seg_tmp->filesize);
                 goto finish;
             }
-            lc_seg_tmp = (struct segment_command_64*)lc_iter;
-            lc_sec_tmp = (struct section_64*)&lc_seg_tmp[1];
-            for(sec_index = 0; sec_index < lc_seg_tmp->nsects; sec_index++)
+
+            for(sec_index = 0; sec_index < lc_seg_tmp->nsects; lc_sec_tmp++, sec_index++)
             {
                 curblock_name = std::string(lc_seg_tmp->segname) + "::" + std::string(lc_sec_tmp->sectname);
-                insert_section(curblock_name, lc_sec_tmp->offset + binBegin, lc_sec_tmp->size);
-                goto finish;
+                if (curblock_name == kmap_nanme)
+                {
+                    if (live_kernel == true)
+                    {
+                        kernel_address_equiv = lc_sec_tmp->addr;
+                    }
+                    else
+                    {
+                        kernel_address_equiv = lc_sec_tmp->offset + binBegin;
+                    }
+                    insert_section(curblock_name, kernel_address_equiv, lc_sec_tmp->size);
+                    goto finish;
+                }
             }
         }
         lc_iter = (struct load_command*)((size_t)lc_iter + lc_iter->cmdsize);
@@ -70,6 +117,10 @@ int kernel_xnu::dyn_kmap_find(std::string kmap_nanme, named_kmap_t** block_out)
     goto fail;
 finish:
     result = 0;
+    if (block_out != 0)
+    {
+        check_kmap(kmap_nanme, block_out);
+    }
 fail:
     return result;;
 }

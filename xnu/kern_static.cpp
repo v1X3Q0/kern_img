@@ -56,10 +56,12 @@ int kern_static::parseAndGetGlobals()
     struct mach_header_64* mach_header_tmp = (struct mach_header_64*)binBegin;
     struct thread_command* ut_com = 0;
     _STRUCT_ARM_THREAD_STATE64* tregs = 0;
+	arm_state_hdr_t *hdr = 0;
     size_t targ_pc = 0;
 
     getloadcommandfrommach(mach_header_tmp, LC_UNIXTHREAD, (struct load_command**)&ut_com);
-    tregs = (_STRUCT_ARM_THREAD_STATE64*)&ut_com[1];
+    hdr = (arm_state_hdr*)&ut_com[1];
+    tregs = (_STRUCT_ARM_THREAD_STATE64*)&hdr[1];
 
     targ_pc = tregs->__pc;
     kern_sym_insert("_start", targ_pc);
