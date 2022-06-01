@@ -16,6 +16,7 @@ protected:
 
 public:
     using kernel_block::kernel_block;
+    int ksym_dlsym(const char* newString, size_t* out_address);
 };
 
 #endif
