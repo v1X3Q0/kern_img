@@ -8,12 +8,13 @@
 
 class kern_dynamic : public kernel_windows
 {
+public:
     // virtual methods to be implemented, 
-    int ksym_dlsym(const char* newString, size_t* out_address);
     int parseAndGetGlobals();
     void insert_section(std::string sec_name, uint64_t sh_offset, uint64_t sh_size);
+    int ksym_dlsym(const char* newString, size_t* out_address);
 
-    int dresolve_live_symbol(const char *symbol, void** symbol_out);
+    int kva_to_raw(const char* symbol, void** symbol_out);
 
     kern_dynamic(uint32_t* binBegin_a);
     int register_statics();

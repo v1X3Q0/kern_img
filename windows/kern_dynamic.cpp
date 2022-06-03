@@ -1,4 +1,8 @@
 #include <string>
+#include <Windows.h>
+
+#include <localUtil_windows.h>
+
 #include "kern_dynamic.h"
 
 kern_dynamic::kern_dynamic(uint32_t* binBegin_a) : kernel_windows(binBegin_a)
@@ -6,29 +10,22 @@ kern_dynamic::kern_dynamic(uint32_t* binBegin_a) : kernel_windows(binBegin_a)
     syskern_static = kernel_block::allocate_kern_img<kern_static>("C:\\Windows\\System32\\ntoskrnl.exe");
 }
 
-int kern_dynamic::dresolve_live_symbol(const char *symbol, void** symbol_out)
+int kern_dynamic::kva_to_raw(const char *symbol, void** symbol_out)
 {
     int result = -1;
-    void* symTmp = 0;
-    struct section_64* section_64_static = 0;
-    const struct section_64* section_64_live = 0;
-    named_kmap_t* mh_base = 0;
-    struct mach_header_64* mh_dyn = 0;
+    size_t symTmp = 0;
+    IMAGE_SECTION_HEADER* section_64_static = 0;
 
     // on the read file
-    SAFE_BAIL(syskern_static->ksym_dlsym(symbol, (size_t*)&symTmp) == -1);
-    SAFE_BAIL(section_with_sym((struct mach_header_64*)syskern_static->get_binbegin(), (size_t)symTmp, &section_64_static) == -1);
+    SAFE_BAIL(syskern_static->ksym_dlsym(symbol, &symTmp) == -1);
+    SAFE_BAIL(section_with_sym((uint8_t*)syskern_static->get_binbegin(), symTmp, &section_64_static) == -1);
 
-    // on the live kernel header
-    SAFE_BAIL(check_kmap("mach_header", &mh_base) == -1);
-    mh_dyn = (struct mach_header_64*)mh_base->kmap_stats.alloc_base;
-    section_64_live = getsectbynamefromheader_64(mh_dyn, section_64_static->segname, section_64_static->sectname);
-    SAFE_BAIL(section_64_live == 0);
+    symTmp = symTmp - section_64_static->VirtualAddress + section_64_static->PointerToRawData;
 
     result = 0;
     if (symbol_out != 0)
     {
-        *symbol_out = (void*)((size_t)symTmp - section_64_static->addr + section_64_live->addr);
+        *symbol_out = (void*)symTmp;
     }
 fail:
     return result;
@@ -42,7 +39,9 @@ int kern_dynamic::ksym_dlsym(const char* newString, size_t* out_address)
 
     FINISH_IF(kern_sym_fetch(newString, &symtmp) == 0);
     SAFE_BAIL(syskern_static == 0);
-    SAFE_BAIL(dresolve_live_symbol(newString, (void**)&symtmp) == -1);
+    symtmp = redlsym((uint8_t*)syskern_static->get_binbegin(), newString, FALSE);
+    SAFE_BAIL(symtmp == 0);
+    symtmp = symtmp + binBegin;
 
 finish:
     result = 0;
@@ -72,12 +71,16 @@ int kern_dynamic::register_statics()
 int kern_dynamic::parseAndGetGlobals()
 {
     int result = -1;
-    struct mach_header_64* mach_header_temp = 0;
-    uint8_t* mach_header_map = 0;
+    uint8_t* nt_header_map = 0;
+    size_t nt_header_size = 0;
+    size_t opt_header_size = 0;
 
-    SAFE_BAIL(live_kern_addr(binBegin, sizeof(struct mach_header_64), (void**)&mach_header_temp) == -1);
+    opt_header_size = sizeof(IMAGE_DOS_HEADER) + NT_HEADER_SIZE + sizeof(IMAGE_FILE_HEADER) + sizeof(IMAGE_OPTIONAL_HEADER);
 
-    insert_section("mach_header", binBegin, mach_header_temp->sizeofcmds);
+    SAFE_BAIL(live_kern_addr(binBegin, opt_header_size, (void**)&nt_header_map) == -1);
+    SAFE_BAIL(nt_headsize(nt_header_map, &nt_header_size) == -1);
+
+    insert_section("nt_header", binBegin, nt_header_size);
 
     set_known_offsets();
     target_set_known_offsets();
@@ -86,11 +89,11 @@ int kern_dynamic::parseAndGetGlobals()
     register_statics();
 #endif
 
-    dyn_offsets(this);
+    //dyn_offsets(this);
 
     result = 0;
 fail:
-    SAFE_FREE(mach_header_temp);
+    SAFE_FREE(nt_header_map);
     return result;
 }
 
