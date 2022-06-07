@@ -119,6 +119,21 @@ public:
         return result;
     }
 
+    template <typename kern_dist>
+    static kern_dist* grab_live_kernel(void* kern_base, kernel_block* kern_pass)
+    {
+        kern_dist* result = 0;
+
+        result = new kern_dist((uint32_t*)kern_base, kern_pass);
+        SAFE_BAIL(result->parseAndGetGlobals() == -1);
+
+        goto finish;
+    fail:
+        SAFE_DEL(result);
+    finish:
+        return result;
+    }
+
     virtual int ksym_dlsym(const char* newString, size_t* out_address) = 0;
     virtual int parseAndGetGlobals() = 0;
     virtual void insert_section(std::string sec_name, uint64_t sh_offset, uint64_t sh_size) = 0;

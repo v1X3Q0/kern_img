@@ -17,7 +17,9 @@ public:
     int kva_to_raw(const char* symbol, void** symbol_out);
 
     kern_dynamic(uint32_t* binBegin_a);
+    kern_dynamic(uint32_t* binBegin_a, kernel_block* kern_tmp);
     int register_statics();
+    kernel_windows* get_syskern_static() { return syskern_static; };
 
 private:
     kern_static* syskern_static;

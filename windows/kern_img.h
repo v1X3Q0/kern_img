@@ -15,6 +15,7 @@ protected:
     int dyn_kmap_find(std::string kmap_nanme, named_kmap_t** block_out);
 
 public:
+    virtual kernel_windows* get_syskern_static() = 0;
     using kernel_block::kernel_block;
 };
 

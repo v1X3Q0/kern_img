@@ -4,6 +4,8 @@
 #include <string>
 #include "kern_img.h"
 
+#define KERNEL_PATH "C:\\Windows\\System32\\ntoskrnl.exe"
+
 class kern_static : public kernel_windows
 {
 public:
@@ -16,6 +18,7 @@ public:
     std::map<std::string, size_t>* kern_sym_map_fetch() { return &kern_sym_map; };
     std::map<std::string, size_t>* kern_off_map_fetch()  { return &kern_off_map; };
 
+    kernel_windows* get_syskern_static() { return (kernel_windows*)this; };
 private:
     using kernel_windows::kernel_windows;
     // task strut offsets, for now its easier for us to just assume this routine

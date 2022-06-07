@@ -7,7 +7,12 @@
 
 kern_dynamic::kern_dynamic(uint32_t* binBegin_a) : kernel_windows(binBegin_a)
 {
-    syskern_static = kernel_block::allocate_kern_img<kern_static>("C:\\Windows\\System32\\ntoskrnl.exe");
+    syskern_static = kernel_block::allocate_kern_img<kern_static>(KERNEL_PATH);
+}
+
+kern_dynamic::kern_dynamic(uint32_t* binBegin_a, kernel_block* kern_tmp) : kernel_windows(binBegin_a)
+{
+    syskern_static = (kern_static*)kern_tmp;
 }
 
 int kern_dynamic::kva_to_raw(const char *symbol, void** symbol_out)
