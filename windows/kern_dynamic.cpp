@@ -3,6 +3,8 @@
 
 #include <localUtil_windows.h>
 
+#include <windows_dyn_offset.h>
+
 #include "kern_dynamic.h"
 
 kern_dynamic::kern_dynamic(uint32_t* binBegin_a) : kernel_windows(binBegin_a)
@@ -90,11 +92,9 @@ int kern_dynamic::parseAndGetGlobals()
     set_known_offsets();
     target_set_known_offsets();
 
-#ifdef TARGET_OS_OSX
     register_statics();
-#endif
 
-    //dyn_offsets(this);
+    dyn_offsets(this);
 
     result = 0;
 fail:
