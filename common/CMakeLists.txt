@@ -8,6 +8,8 @@ set(LOCAL_INCLUDES
 
 if (ARCH STREQUAL "arm64" OR ARCH STREQUAL "arm64e")
     list(APPEND LOCAL_INCLUDES ${ANDROID_TOOL_BASE}/common/hde_armv8)
+elseif (ARCH STREQUAL "AMD64" OR ARCH STREQUAL "i386")
+    list(APPEND LOCAL_INCLUDES ${ANDROID_TOOL_BASE}/common/hde_x86)
 endif()
 
 add_library(${PROJECT_NAME} STATIC kernel_block.cpp)
