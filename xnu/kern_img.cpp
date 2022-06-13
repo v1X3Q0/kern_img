@@ -122,5 +122,5 @@ finish:
         check_kmap(kmap_nanme, block_out);
     }
 fail:
-    return result;;
+    return result;
 }

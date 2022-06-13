@@ -83,6 +83,7 @@ int kern_dynamic::parseAndGetGlobals()
     size_t opt_header_size = 0;
 
     opt_header_size = sizeof(IMAGE_DOS_HEADER) + NT_HEADER_SIZE + sizeof(IMAGE_FILE_HEADER) + sizeof(IMAGE_OPTIONAL_HEADER);
+    opt_header_size = PAGE_SIZE4K;
 
     SAFE_BAIL(live_kern_addr(binBegin, opt_header_size, (void**)&nt_header_map) == -1);
     SAFE_BAIL(nt_headsize(nt_header_map, &nt_header_size) == -1);
