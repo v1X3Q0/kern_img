@@ -9,11 +9,11 @@
 #include <krw_util.h>
 
 #ifdef _WIN32
-#define LOCAL_MAX max
-#define LOCAL_MIN min
+#define LOCAL_MAX(uintx)    max
+#define LOCAL_MIN(uintx)    min
 #else
-#define LOCAL_MAX std::max
-#define LOCAL_MIN std::min
+#define LOCAL_MAX(uintx)    std::max<uintx>
+#define LOCAL_MIN(uintx)    std::min<uintx>
 #endif
 
 void kernel_block::set_known_offsets()
@@ -116,8 +116,8 @@ int kernel_block::consolidate_kmap_allocation(size_t kva, size_t kb_size, real_k
     }
     else
     {
-        new_kbase = LOCAL_MIN<size_t>(kva, collision_kmaps.front()->kva);
-        new_alloc_sz = LOCAL_MAX(kva + kb_size, collision_kmaps.back()->kva + collision_kmaps.back()->alloc_size) -
+        new_kbase = LOCAL_MIN(size_t)(kva, collision_kmaps.front()->kva);
+        new_alloc_sz = LOCAL_MAX(size_t)(kva + kb_size, collision_kmaps.back()->kva + collision_kmaps.back()->alloc_size) -
             std::min<size_t>(kva, collision_kmaps.front()->kva);
     }
     new_alloc = (char*)calloc(new_alloc_sz, 1);
