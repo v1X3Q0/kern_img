@@ -13,7 +13,7 @@ set(LOCAL_INCLUDES
     ${ANDROID_TOOL_BASE}/common/local_util
     ${ANDROID_TOOL_BASE}/common/bgrep_c
     ${ANDROID_TOOL_BASE}/common/c_reginst
-    ${ANDROID_TOOL_BASE}/${MY_HOST_COMPILER}/${MY_HOST_COMPILER}_dyn_offset
+    ${ANDROID_TOOL_BASE}/${MY_HOST_COMPILER}/${RW_DRIVER}/${MY_HOST_COMPILER}_dyn_offset
     ${ANDROID_TOOL_BASE}/${MY_HOST_COMPILER}/${RW_DRIVER}/include
 )
 
