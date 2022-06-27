@@ -89,12 +89,12 @@ public:
     static kern_dist* allocate_kern_img(const char* kern_file)
     {
         kern_dist* result = 0;
-        void* binBegin = 0;
-        size_t kernSz = 0;
+        void* binBegin_l = 0;
+        size_t kernSz_l = 0;
 
-        SAFE_BAIL(block_grab(kern_file, &binBegin, &kernSz) == -1);
+        SAFE_BAIL(block_grab(kern_file, &binBegin_l, &kernSz_l) == -1);
 
-        result = new kern_dist((uint32_t*)binBegin, kernSz);
+        result = new kern_dist((uint32_t*)binBegin_l, kernSz_l);
         SAFE_BAIL(result->parseAndGetGlobals() == -1);
 
         goto finish;
@@ -138,11 +138,11 @@ public:
     virtual int parseAndGetGlobals() = 0;
     virtual void insert_section(std::string sec_name, uint64_t sh_offset, uint64_t sh_size) = 0;
 
+    // not live kernel constructors, we have the size and such
+    kernel_block(uint32_t* binBegin_a, size_t kern_sz_a) : binBegin((size_t)binBegin_a), kern_sz(kern_sz_a) {};
 protected:
     // private constructors for internal use only
     kernel_block(uint32_t* binBegin_a) : binBegin((size_t)binBegin_a), live_kernel(true) {};
-    // not live kernel constructors, we have the size and such
-    kernel_block(uint32_t* binBegin_a, size_t kern_sz_a) : binBegin((size_t)binBegin_a), kern_sz(kern_sz_a) {};
     // kernel_block(uint32_t* binBegin_a, size_t kern_sz_a) : binBegin((size_t)binBegin_a), kern_sz((size_t)kern_sz_a), live_kernel(false) {};
     kernel_block(const char* kern_file) {};
 

@@ -20,4 +20,4 @@ target_include_directories(${PROJECT_NAME}_live PRIVATE ${LOCAL_INCLUDES})
 
 target_include_directories(${PROJECT_NAME}_live PRIVATE
     ${ANDROID_TOOL_BASE}/common/krw_util/krw_util
-    ${ANDROID_TOOL_BASE}/linux/rwDrv/include)
+    ${ANDROID_TOOL_BASE}/${MY_HOST_COMPILER}/${RW_DRIVER}/include)
