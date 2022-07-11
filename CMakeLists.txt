@@ -25,6 +25,7 @@ endif()
 add_library(${PROJECT_NAME} STATIC ${SOURCES_LIST})
 
 set(LOCAL_INCLUDES
+    ${MY_HOST_COMPILER}
     common
     ${ANDROID_TOOL_BASE}/common/local_util
     ${ANDROID_TOOL_BASE}/common/bgrep_c
