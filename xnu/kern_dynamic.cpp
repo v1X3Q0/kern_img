@@ -7,7 +7,7 @@
 #include <localUtil_xnu.h>
 // #include <krw_util.h>
 #include <kernel_resolver.h>
-#include <xnu_dyn_offset.h>
+#include <Darwin_dyn_offset.h>
 
 #include "kern_dynamic.h"
 #include "kern_static.h"

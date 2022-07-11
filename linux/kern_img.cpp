@@ -12,7 +12,7 @@ int kernel_linux::findKindInKstr(const char* newString, int* index)
     int i = 0;
 
     SAFE_BAIL(check_kmap("__ksymtab_strings", &ksymstrSec) == -1);
-    SAFE_BAIL(live_kern_addr(UNRESOLVE_REL(ksymstrSec->kva), ksymstrSec->alloc_size, (void**)&strIter) == -1);
+    SAFE_BAIL(live_kern_addr(UNRESOLVE_REL(ksymstrSec->kva), ksymstrSec->kmap_stats.alloc_size, (void**)&strIter) == -1);
     // strIter = (const char*)UNRESOLVE_REL(ksymstrSec->sh_offset);
 
     for (; i < ksyms_count; i++)

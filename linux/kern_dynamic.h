@@ -16,6 +16,9 @@ public:
 private:
     using kernel_linux::kernel_linux;
 
+    // need this defined
+    void target_set_known_offsets() {};
+
     // dynamic stores ksymtab, kcrctab and ksymstr in the same struct, so one
     // routine can pull them all.
     int base_ksymtab_kcrctab_ksymtabstrings();

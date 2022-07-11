@@ -11,6 +11,7 @@ class kernel_linux : public kernel_block
 {
 protected:
     size_t ksyms_count;
+    int dyn_kmap_find(std::string kmap_nanme, named_kmap_t** block_out) { return -1; };
 
 public:
     using kernel_block::kernel_block;
