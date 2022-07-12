@@ -1,12 +1,9 @@
-#ifdef LIVE_KERNEL
-
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <elf.h>
 
-#include <hdeA64.h>
 #include <ibeSet.h>
 #include <localUtil.h>
 
@@ -111,8 +108,8 @@ int kern_dynamic::ksym_dlsym(const char* newString, size_t* out_address)
     SAFE_BAIL(check_kmap("__ksymtab_gpl", &ksymgplSec) == -1);
     SAFE_BAIL(check_kmap("__ksymtab_strings", &ksymstrSec) == -1);
 
-    ksymIter = (kernel_symbol*)ksymSec->alloc_base;
-    kstrBase = (const char*)ksymstrSec->alloc_base;
+    ksymIter = (kernel_symbol*)ksymSec->kmap_stats.alloc_base;
+    kstrBase = (const char*)ksymstrSec->kmap_stats.alloc_base;
     // SAFE_BAIL(live_kern_addr(UNRESOLVE_REL(ksymSec->sh_offset), ksymSec->sh_size + ksymgplSec->sh_size, (void**)&ksymIter) == -1);
     // SAFE_BAIL(live_kern_addr(UNRESOLVE_REL(ksymstrSec->sh_offset), ksymstrSec->sh_size, (void**)&kstrBase) == -1);
     // strIter = (const char*)UNRESOLVE_REL(ksymstrSec->sh_offset);
@@ -197,5 +194,3 @@ fail:
     SAFE_LIVE_FREE(init_task_mapped);
     return result;
 }
-
-#endif // LIVE_KERNEL

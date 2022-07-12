@@ -3,7 +3,7 @@
 
 #include <localUtil_windows.h>
 
-#include <windows_dyn_offset.h>
+#include <Windows_dyn_offset.h>
 
 #include "kern_dynamic.h"
 
