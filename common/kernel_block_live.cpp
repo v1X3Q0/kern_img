@@ -118,7 +118,7 @@ int kernel_block::consolidate_kmap_allocation(size_t kva, size_t kb_size, real_k
     {
         new_kbase = LOCAL_MIN(size_t)(kva, collision_kmaps.front()->kva);
         new_alloc_sz = LOCAL_MAX(size_t)(kva + kb_size, collision_kmaps.back()->kva + collision_kmaps.back()->alloc_size) -
-            std::min<size_t>(kva, collision_kmaps.front()->kva);
+            LOCAL_MIN(size_t)(kva, collision_kmaps.front()->kva);
     }
     new_alloc = (char*)calloc(new_alloc_sz, 1);
 
