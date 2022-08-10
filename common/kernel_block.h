@@ -141,14 +141,14 @@ public:
     // not live kernel constructors, we have the size and such
     kernel_block(uint32_t* binBegin_a, size_t kern_sz_a) : binBegin((size_t)binBegin_a), kern_sz(kern_sz_a) {};
 protected:
+    size_t binBegin;
+    bool live_kernel;
+    size_t kern_sz;
+
     // private constructors for internal use only
     kernel_block(uint32_t* binBegin_a) : binBegin((size_t)binBegin_a), live_kernel(true) {};
     // kernel_block(uint32_t* binBegin_a, size_t kern_sz_a) : binBegin((size_t)binBegin_a), kern_sz((size_t)kern_sz_a), live_kernel(false) {};
     kernel_block(const char* kern_file) {};
-
-    bool live_kernel;
-    size_t binBegin;
-    size_t kern_sz;
 
     // this vector is for validating that a request is for a block that is already mapped
     std::vector<real_kmap_t*> kmap_list;
