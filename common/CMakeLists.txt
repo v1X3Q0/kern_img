@@ -12,6 +12,13 @@ elseif (ARCH STREQUAL "AMD64" OR ARCH STREQUAL "i386" OR ARCH MATCHES "x86_64")
     list(APPEND LOCAL_INCLUDES ${ANDROID_TOOL_BASE}/common/hde_x86)
 endif()
 
+set(SOURCES_LIST
+    kernel_block.cpp)
+
+if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Metalkit")
+    list(APPEND SOURCES_LIST kernel_search.cpp)
+endif()
+
 add_library(${PROJECT_NAME} STATIC kernel_block.cpp)
 add_library(${PROJECT_NAME}_live STATIC kernel_block_live.cpp)
 

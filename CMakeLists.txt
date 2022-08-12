@@ -22,8 +22,6 @@ if (${MY_HOST_COMPILER} MATCHES "linux")
     list(APPEND SOURCES_LIST ${MY_HOST_COMPILER}/pak_kallsym.cpp)
 endif()
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES_LIST})
-
 set(LOCAL_INCLUDES
     ${MY_HOST_COMPILER}
     common
@@ -47,5 +45,9 @@ if (${MY_HOST_COMPILER} MATCHES "xnu")
     list(APPEND LOCAL_INCLUDES ${ANDROID_TOOL_BASE}/xnu/kernelresolver)
 endif()
 
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${LOCAL_INCLUDES})
+if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Metalkit")
+    add_library(${PROJECT_NAME} STATIC ${SOURCES_LIST})
+    target_include_directories(${PROJECT_NAME} PRIVATE
+        ${LOCAL_INCLUDES})
+endif()
+
