@@ -19,7 +19,7 @@ if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Metalkit")
     list(APPEND SOURCES_LIST kernel_search.cpp)
 endif()
 
-add_library(${PROJECT_NAME} STATIC kernel_block.cpp)
+add_library(${PROJECT_NAME} STATIC ${SOURCES_LIST})
 add_library(${PROJECT_NAME}_live STATIC kernel_block_live.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${LOCAL_INCLUDES})
