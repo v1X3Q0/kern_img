@@ -16,7 +16,7 @@ int kern_static::ksym_dlsym(const char* newString, size_t* out_address)
 
     outAddr = redlsym((UINT8*)binBegin, newString, FALSE);
     SAFE_BAIL(outAddr == 0);
-    pe_vatoraw((uint8_t*)binBegin, outAddr, (void**)&outAddr);
+    pe_vatoraw((uint8_t*)binBegin, outAddr, &outAddr);
     outAddr = outAddr + binBegin;
 
     result = 0;
