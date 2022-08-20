@@ -174,6 +174,10 @@ protected:
 
     std::map<std::string, size_t> kern_sym_map;
     std::map<std::string, size_t> kern_off_map;
+#ifndef NDEBUG
+public:
+    std::map<std::string, size_t>* get_kernoff_map() { return &kern_off_map; };
+#endif
 };
 
 #endif
