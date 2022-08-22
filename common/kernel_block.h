@@ -144,9 +144,14 @@ protected:
     size_t binBegin;
     bool live_kernel;
     size_t kern_sz;
-
+#ifdef __METALKIT__
+public:
+#endif
     // private constructors for internal use only
     kernel_block(uint32_t* binBegin_a) : binBegin((size_t)binBegin_a), live_kernel(true) {};
+#ifdef __METALKIT__
+protected:
+#endif
     // kernel_block(uint32_t* binBegin_a, size_t kern_sz_a) : binBegin((size_t)binBegin_a), kern_sz((size_t)kern_sz_a), live_kernel(false) {};
     kernel_block(const char* kern_file) {};
 
@@ -176,7 +181,10 @@ protected:
     std::map<std::string, size_t> kern_off_map;
 #ifndef NDEBUG
 public:
-    std::map<std::string, size_t>* get_kernoff_map() { return &kern_off_map; };
+    std::map<std::string, size_t>* get_kernoff_map()
+    {
+        return &kern_off_map;
+    }
 #endif
 };
 
