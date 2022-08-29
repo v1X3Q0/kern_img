@@ -13,6 +13,8 @@ protected:
     size_t ksyms_count;
     int dyn_kmap_find(std::string kmap_nanme, named_kmap_t** block_out) { return -1; };
 
+    // need this defined
+    void target_set_known_offsets() {};
 public:
     using kernel_block::kernel_block;
     virtual void insert_section(std::string sec_name, uint64_t sh_offset, uint64_t sh_size) = 0;
@@ -25,6 +27,10 @@ public:
 					   char *result, size_t maxlen);
     unsigned long kallsyms_lookup_name(const char *name);
     unsigned long kallsyms_sym_address(int idx);
+    int parse_gpl();
+
+    // need this to be defined
+    int ksym_dlsym(const char* newString, size_t* out_address);
 };
 
 #endif

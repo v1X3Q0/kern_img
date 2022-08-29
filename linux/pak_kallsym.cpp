@@ -7,7 +7,7 @@
 #include "kern_img.h"
 
 #define ARRAY_SIZE(array) \
-    (sizeof(array) / sizeof(*array))
+	(sizeof(array) / sizeof(*array))
 #define KSYM_NAME_LEN 128
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -18,8 +18,8 @@ typedef uint32_t u32;
 // the base of the kernel itself. I may just grab the binBegin and add that.
 unsigned long kernel_linux::kallsyms_sym_address(int idx)
 {
-	const unsigned long* kallsyms_addresses = (unsigned long*)KSYM_V(kallsyms_addresses);
-	const int* kallsyms_offsets = (int*)KSYM_V(kallsyms_offsets);
+	const unsigned long *kallsyms_addresses = (unsigned long *)KSYM_V(kallsyms_addresses);
+	const int *kallsyms_offsets = (int *)KSYM_V(kallsyms_offsets);
 	const unsigned long kallsyms_relative_base = KSYM_V(kallsyms_relative_base);
 
 	// if (!IS_ENABLED(CONFIG_KALLSYMS_BASE_RELATIVE))
@@ -31,7 +31,9 @@ unsigned long kernel_linux::kallsyms_sym_address(int idx)
 
 	/* ...otherwise, positive offsets are absolute values */
 	if (kallsyms_offsets[idx] >= 0)
+	{
 		return kallsyms_offsets[idx];
+	}
 
 	/* ...and negative offsets are relative to kallsyms_relative_base - 1 */
 	return kallsyms_relative_base - 1 - kallsyms_offsets[idx];
@@ -43,14 +45,14 @@ unsigned long kernel_linux::kallsyms_sym_address(int idx)
  * given the offset to where the symbol is in the compressed stream.
  */
 unsigned int kernel_linux::kallsyms_expand_symbol(unsigned int off,
-					   char *result, size_t maxlen)
+												  char *result, size_t maxlen)
 {
 	int len, skipped_first = 0;
 	const u8 *tptr, *data;
 
-	const u8* kallsyms_names = (const u8*)KSYM_V(kallsyms_names);
-	const u8* kallsyms_token_table = (const u8*)KSYM_V(kallsyms_token_table);
-	const u16* kallsyms_token_index = (const u16*)KSYM_V(kallsyms_token_index);
+	const u8 *kallsyms_names = (const u8 *)KSYM_V(kallsyms_names);
+	const u8 *kallsyms_token_table = (const u8 *)KSYM_V(kallsyms_token_table);
+	const u16 *kallsyms_token_index = (const u16 *)KSYM_V(kallsyms_token_index);
 	/* Get the compressed symbol length from the first symbol byte. */
 	data = &kallsyms_names[off];
 	len = *data;
@@ -66,19 +68,23 @@ unsigned int kernel_linux::kallsyms_expand_symbol(unsigned int off,
 	 * For every byte on the compressed symbol data, copy the table
 	 * entry for that byte.
 	 */
-	while (len) {
+	while (len)
+	{
 		tptr = &kallsyms_token_table[kallsyms_token_index[*data]];
 		data++;
 		len--;
 
-		while (*tptr) {
-			if (skipped_first) {
+		while (*tptr)
+		{
+			if (skipped_first)
+			{
 				if (maxlen <= 1)
 					goto tail;
 				*result = *tptr;
 				result++;
 				maxlen--;
-			} else
+			}
+			else
 				skipped_first = 1;
 			tptr++;
 		}
@@ -132,12 +138,14 @@ unsigned long kernel_linux::kallsyms_lookup_name(const char *name)
 	unsigned int off;
 	const unsigned long kallsyms_num_syms = KSYM_V(kallsyms_num_syms);
 
-
-	for (i = 0, off = 0; i < kallsyms_num_syms; i++) {
+	for (i = 0, off = 0; i < kallsyms_num_syms; i++)
+	{
 		off = kallsyms_expand_symbol(off, namebuf, ARRAY_SIZE(namebuf));
 
 		if (strcmp(namebuf, name) == 0)
+		{
 			return kallsyms_sym_address(i);
+		}
 	}
 	return module_kallsyms_lookup_name(name);
 }

@@ -4,6 +4,16 @@
 
 #include "kernel_block.h"
 
+void kernel_block::set_known_offsets()
+{
+    kern_off_map["list_entry.next"] = 0;
+    kern_off_map["list_entry.prev"] = sizeof(size_t);
+
+    kern_off_map["list_entry<T>.next"] = 0;
+    kern_off_map["list_entry<T>.prev"] = sizeof(size_t);
+
+}
+
 int kernel_block::kern_sym_fetch(std::string kstruct_name, size_t* ksym_out)
 {
     int result = -1;

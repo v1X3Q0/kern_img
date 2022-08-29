@@ -7,7 +7,6 @@ class kern_dynamic : public kernel_linux
 {
 public:
     // virtual methods to be implemented, 
-    int ksym_dlsym(const char* newString, size_t* out_address);
     int parseAndGetGlobals();
     void insert_section(std::string sec_name, uint64_t sh_offset, uint64_t sh_size);
     
@@ -15,9 +14,6 @@ public:
 
 private:
     using kernel_linux::kernel_linux;
-
-    // need this defined
-    void target_set_known_offsets() {};
 
     // dynamic stores ksymtab, kcrctab and ksymstr in the same struct, so one
     // routine can pull them all.

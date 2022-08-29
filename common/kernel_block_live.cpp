@@ -16,16 +16,6 @@
 #define LOCAL_MIN(uintx)    std::min<uintx>
 #endif
 
-void kernel_block::set_known_offsets()
-{
-    kern_off_map["list_entry.next"] = 0;
-    kern_off_map["list_entry.prev"] = sizeof(size_t);
-
-    kern_off_map["list_entry<T>.next"] = 0;
-    kern_off_map["list_entry<T>.prev"] = sizeof(size_t);
-
-}
-
 int kernel_block::live_kern_addr(size_t target_kernel_address, size_t size_kernel_buf, void** out_live_addr)
 {
     int result = -1;

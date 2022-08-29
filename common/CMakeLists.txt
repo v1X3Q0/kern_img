@@ -15,16 +15,20 @@ endif()
 set(SOURCES_LIST
     kernel_block.cpp)
 
+if (DEFINED NOLIVE)
+    list(APPEND SOURCES_LIST kernel_block_nolive.cpp)
+else()
+    list(APPEND SOURCES_LIST kernel_block_live.cpp)
+    list(APPEND LOCAL_INCLUDES
+        ${ANDROID_TOOL_BASE}/common/krw_util/krw_util
+        ${ANDROID_TOOL_BASE}/${MY_HOST_COMPILER}/${RW_DRIVER}/include
+        )
+endif()
+
+
 if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Metalkit")
     list(APPEND SOURCES_LIST kernel_search.cpp)
 endif()
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES_LIST})
-add_library(${PROJECT_NAME}_live STATIC kernel_block_live.cpp)
-
 target_include_directories(${PROJECT_NAME} PRIVATE ${LOCAL_INCLUDES})
-target_include_directories(${PROJECT_NAME}_live PRIVATE ${LOCAL_INCLUDES})
-
-target_include_directories(${PROJECT_NAME}_live PRIVATE
-    ${ANDROID_TOOL_BASE}/common/krw_util/krw_util
-    ${ANDROID_TOOL_BASE}/${MY_HOST_COMPILER}/${RW_DRIVER}/include)

@@ -13,13 +13,22 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/common)
 
 project(kern_${MY_HOST_COMPILER})
 
+# so in mac and windows case, they have access to their static
+# kernel's but android doesn't. so kern_static will be omitted
+# from the android build. linux also seems to follow this
+# convention
 set(SOURCES_LIST
     ${MY_HOST_COMPILER}/kern_img.cpp
-    ${MY_HOST_COMPILER}/kern_dynamic.cpp
-    ${MY_HOST_COMPILER}/kern_static.cpp)
+    )
 
-if (${MY_HOST_COMPILER} MATCHES "linux")
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    list(APPEND SOURCES_LIST ${MY_HOST_COMPILER}/kern_static.cpp)
+elseif (${MY_HOST_COMPILER} MATCHES "linux")
     list(APPEND SOURCES_LIST ${MY_HOST_COMPILER}/pak_kallsym.cpp)
+endif()
+
+if (NOT DEFINED NOLIVE)
+    list(APPEND SOURCES_LIST ${MY_HOST_COMPILER}/kern_dynamic.cpp)
 endif()
 
 set(LOCAL_INCLUDES
