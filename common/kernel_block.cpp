@@ -14,7 +14,7 @@ void kernel_block::set_known_offsets()
 
 }
 
-int kernel_block::kern_sym_fetch(std::string kstruct_name, size_t* ksym_out)
+int kernel_block::kern_sym_fetch(std::string kstruct_name, uint64_t* ksym_out)
 {
     int result = -1;
     
@@ -25,19 +25,19 @@ fail:
     return result;
 }
 
-int kernel_block::kern_sym_insert(std::string ksym_name, size_t symaddr)
+int kernel_block::kern_sym_insert(std::string ksym_name, uint64_t symaddr)
 {
     kern_sym_map[ksym_name] = symaddr;
     return 0;
 }
 
-int kernel_block::kern_off_insert(std::string koff_name, size_t offval)
+int kernel_block::kern_off_insert(std::string koff_name, uint64_t offval)
 {
     kern_off_map[koff_name] = offval;
     return 0;
 }
 
-int kernel_block::kstruct_offset(std::string kstruct_name, size_t* kstruct_off_out)
+int kernel_block::kstruct_offset(std::string kstruct_name, uint64_t* kstruct_off_out)
 {
     int result = -1;
     

@@ -23,6 +23,7 @@ public:
     int findKindInKstr(const char* newString, int* index);
 
     size_t get_ksyms_count() { return ksyms_count; };
+    void set_ksyms_count(size_t ksyms_count_a) { ksyms_count = ksyms_count_a; };
     unsigned int kallsyms_expand_symbol(unsigned int off,
 					   char *result, size_t maxlen);
     unsigned long kallsyms_lookup_name(const char *name);

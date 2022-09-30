@@ -78,11 +78,13 @@ public:
     int check_kmap(std::string kmap_name, named_kmap_t** named_kmap_out);
     int check_kmap_force(std::string kmap_name, named_kmap_t** named_kmap_out);
 
-    int kstruct_offset(std::string kstruct_name, size_t* kstruct_off_out);
-    int kern_sym_fetch(std::string kstruct_name, size_t* kstruct_off_out);
+    int kstruct_offset(std::string kstruct_name, uint64_t* kstruct_off_out);
+    int kern_sym_fetch(std::string kstruct_name, uint64_t* kstruct_off_out);
 
-    int kern_sym_insert(std::string ksym_name, size_t symaddr);
-    int kern_off_insert(std::string koff_name, size_t offval);
+    int kern_sym_insert(std::string ksym_name, uint64_t symaddr);
+    int kern_off_insert(std::string koff_name, uint64_t offval);
+
+    int live_kern_addr(size_t target_kernel_address, size_t size_kernel_buf, void** out_live_addr);
 
     // to be used for actual construction
     template <typename kern_dist>
@@ -134,26 +136,26 @@ public:
         return result;
     }
 
-    virtual int ksym_dlsym(const char* newString, size_t* out_address) = 0;
+    virtual int ksym_dlsym(const char* newString, uint64_t* out_address) = 0;
     virtual int parseAndGetGlobals() = 0;
     virtual void insert_section(std::string sec_name, uint64_t sh_offset, uint64_t sh_size) = 0;
 
-    // not live kernel constructors, we have the size and such
-    kernel_block(uint32_t* binBegin_a, size_t kern_sz_a) : binBegin((size_t)binBegin_a), kern_sz(kern_sz_a) {};
+    // not live kernel constructors, we have the size and such cause we allocated it
+    kernel_block(uint32_t* binBegin_a, size_t kern_sz_a) : binBegin((size_t)binBegin_a), kern_sz(kern_sz_a), live_kernel(false) {};
 protected:
     size_t binBegin;
-    bool live_kernel;
+    const bool live_kernel;
     size_t kern_sz;
 #ifdef __METALKIT__
 public:
 #endif
-    // private constructors for internal use only
+    // private constructors for internal use only, live we just give it begin
     kernel_block(uint32_t* binBegin_a) : binBegin((size_t)binBegin_a), live_kernel(true) {};
 #ifdef __METALKIT__
 protected:
 #endif
     // kernel_block(uint32_t* binBegin_a, size_t kern_sz_a) : binBegin((size_t)binBegin_a), kern_sz((size_t)kern_sz_a), live_kernel(false) {};
-    kernel_block(const char* kern_file) {};
+    kernel_block(const char* kern_file) : live_kernel(false) {};
 
     // this vector is for validating that a request is for a block that is already mapped
     std::vector<real_kmap_t*> kmap_list;
@@ -170,18 +172,17 @@ protected:
     int map_kernel_block(std::string block_name, size_t kva, size_t kb_size, named_kmap_t** kmap_ret);
     int consolidate_kmap_allocation(size_t kva, size_t kb_size, real_kmap_t** kmap_ret);
     int map_save_virt(size_t kva, size_t kb_size, void** virt_ret);
-    int live_kern_addr(size_t target_kernel_address, size_t size_kernel_buf, void** out_live_addr);
 
     int volatile_map(size_t kva, size_t kv_size, void** virt_ret, bool volatile_op);
     int volatile_free(size_t kva, void* virt_used, bool volatile_op);
 
     // virtual int grab_kernel_offsets() = 0;
 
-    std::map<std::string, size_t> kern_sym_map;
-    std::map<std::string, size_t> kern_off_map;
+    std::map<std::string, uint64_t> kern_sym_map;
+    std::map<std::string, uint64_t> kern_off_map;
 #ifndef NDEBUG
 public:
-    std::map<std::string, size_t>* get_kernoff_map()
+    std::map<std::string, uint64_t>* get_kernoff_map()
     {
         return &kern_off_map;
     }
