@@ -26,7 +26,7 @@ int kern_dynamic::parseAndGetGlobals()
     gen_kallsymmap(&kern_sym_map);
 
     // get any symbols that we can find with heuristics
-    // finddyn();
+    finddyn(this);
     
     result = 0;
 fail:

@@ -18,6 +18,12 @@ typedef struct
 	const char *name;
 } kernel_symbol;
 
+typedef struct
+{
+	int value_offset;
+	int name_offset;
+} kernel_symbol_relative;
+
 typedef void* kernel_param_ops;
 typedef void* module;
 

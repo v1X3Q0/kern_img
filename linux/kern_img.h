@@ -34,4 +34,6 @@ public:
     int ksym_dlsym(const char* newString, size_t* out_address);
 };
 
+int finddyn(kernel_linux* kernel_local_target);
+
 #endif
