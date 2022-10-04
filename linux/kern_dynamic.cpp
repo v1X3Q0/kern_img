@@ -42,13 +42,16 @@ int kern_dynamic::ksym_dlsym(const char* newString, uint64_t* out_address)
     std::map<std::string, uint64_t>::iterator findres;
 
     // if we have found it dynamically it will be here
-    SAFE_BAIL(kern_sym_fetch(newString, &symtmp) != 0);
+    FINISH_IF(kern_sym_fetch(newString, &symtmp) == 0);
 
-    // if we have not found it tynamically, then check kallsyms cache
+    FINISH_IF(ksym_dlsym_kcrc(this, newString, &symtmp) == 0);
+
+    // if we have not found it dynamically, then check kallsyms cache
     // findres = kallsym_cache.find(newString);
     // SAFE_BAIL(findres == kallsym_cache.end());
     // symtmp = findres->second;
 
+    goto fail;
 finish:
     result = 0;
     if (out_address != 0)
