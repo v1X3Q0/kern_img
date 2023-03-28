@@ -29,7 +29,7 @@ int kern_dynamic::dresolve_live_symbol(const char *symbol, void** symbol_out)
     struct mach_header_64* mh_dyn = 0;
 
     // on the read file
-    SAFE_BAIL(syskern_static->ksym_dlsym(symbol, (size_t*)&symTmp) == -1);
+    SAFE_BAIL(syskern_static->ksym_dlsym(symbol, (uint64_t*)&symTmp) == -1);
     SAFE_BAIL(section_with_sym((struct mach_header_64*)syskern_static->get_binbegin(), (size_t)symTmp, &section_64_static) == -1);
 
     // on the live kernel header
@@ -47,10 +47,10 @@ fail:
     return result;
 }
 
-int kern_dynamic::ksym_dlsym(const char* newString, size_t* out_address)
+int kern_dynamic::ksym_dlsym(const char* newString, uint64_t* out_address)
 {
     int result = -1;
-    size_t symtmp = 0;
+    uint64_t symtmp = 0;
     named_kmap_t* mh_base = 0;
 
     FINISH_IF(kern_sym_fetch(newString, &symtmp) == 0);
@@ -69,10 +69,10 @@ fail:
 
 int kern_dynamic::register_statics()
 {
-    std::map<std::string, size_t>* static_syms = 0;
+    std::map<std::string, uint64_t>* static_syms = 0;
     static_syms = syskern_static->kern_sym_map_fetch();
     auto i = static_syms->begin();
-    size_t resolved_addr = 0;
+    uint64_t resolved_addr = 0;
 
     for (; i != static_syms->end(); i++)
     {

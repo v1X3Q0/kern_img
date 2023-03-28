@@ -7,7 +7,7 @@
 #include "kern_img.h"
 #include "kern_static.h"
 
-int kern_static::ksym_dlsym(const char* newString, size_t* out_address)
+int kern_static::ksym_dlsym(const char* newString, uint64_t* out_address)
 {
     int result = -1;
 

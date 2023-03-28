@@ -5,35 +5,8 @@ if(NOT DEFINED ANDROID_TOOL_BASE)
     message(FATAL_ERROR "need ANDROID_TOOL_BASE")
 endif()
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/common)
-
-# if (${CMAKE_SYSTEM_NAME} MATCHES "Android" OR ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-#     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/linux)
-# endif()
-
-project(kern_${MY_HOST_COMPILER})
-
-# so in mac and windows case, they have access to their static
-# kernel's but android doesn't. so kern_static will be omitted
-# from the android build. linux also seems to follow this
-# convention
-set(SOURCES_LIST
-    ${MY_HOST_COMPILER}/kern_img.cpp
-    )
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    list(APPEND SOURCES_LIST ${MY_HOST_COMPILER}/kern_static.cpp)
-elseif (${MY_HOST_COMPILER} MATCHES "linux")
-    list(APPEND SOURCES_LIST ${MY_HOST_COMPILER}/pak_kallsym.cpp)
-endif()
-
-if (NOT DEFINED NOLIVE)
-    list(APPEND SOURCES_LIST ${MY_HOST_COMPILER}/kern_dynamic.cpp)
-endif()
-
-set(LOCAL_INCLUDES
-    ${MY_HOST_COMPILER}
-    common
+set(KERN_IMG_INCLUDES
+    ${CMAKE_CURRENT_SOURCE_DIR}/common
     ${ANDROID_TOOL_BASE}/common/local_util
     ${ANDROID_TOOL_BASE}/common/bgrep_c
     ${ANDROID_TOOL_BASE}/common/c_reginst
@@ -44,19 +17,16 @@ set(LOCAL_INCLUDES
 )
 
 if (ARCH MATCHES "arm64" OR ARCH MATCHES "aarch64")
-    list(APPEND LOCAL_INCLUDES ${ANDROID_TOOL_BASE}/common/hde_armv8)
+    list(APPEND KERN_IMG_INCLUDES ${ANDROID_TOOL_BASE}/common/hde_armv8)
 elseif (ARCH MATCHES "AMD64" OR ARCH MATCHES "x86_64")
-    list(APPEND LOCAL_INCLUDES ${ANDROID_TOOL_BASE}/common/hde_x86)
+    list(APPEND KERN_IMG_INCLUDES ${ANDROID_TOOL_BASE}/common/hde_x86)
 endif()
 
-# just a definition for static variants
-if (${MY_HOST_COMPILER} MATCHES "xnu")
-    list(APPEND LOCAL_INCLUDES ${ANDROID_TOOL_BASE}/xnu/kernelresolver)
-endif()
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/common)
 
 if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Metalkit")
-    add_library(${PROJECT_NAME} STATIC ${SOURCES_LIST})
-    target_include_directories(${PROJECT_NAME} PRIVATE
-        ${LOCAL_INCLUDES})
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/linux)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/windows)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/xnu)
 endif()
 

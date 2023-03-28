@@ -37,13 +37,13 @@ fail:
 int kern_dynamic::ksym_dlsym(const char* newString, uint64_t* out_address)
 {
     int result = -1;
-    size_t symtmp = 0;
+    uint64_t symtmp = 0;
     named_kmap_t* mh_base = 0;
     std::map<std::string, uint64_t>::iterator findres;
 
     // if we have found it dynamically it will be here
     FINISH_IF(kern_sym_fetch(newString, &symtmp) == 0);
-
+    FINISH_IF(kstruct_offset(newString, &symtmp) == 0);
     FINISH_IF(ksym_dlsym_kcrc(this, newString, &symtmp) == 0);
 
     // if we have not found it dynamically, then check kallsyms cache

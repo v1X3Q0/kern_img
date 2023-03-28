@@ -37,6 +37,6 @@ public:
 };
 
 int finddyn(kernel_linux* kernel_local_target);
-int ksym_dlsym_kcrc(kernel_linux* kernel_local_target, const char* newString, size_t* out_address);
+int ksym_dlsym_kcrc(kernel_linux* kernel_local_target, const char* newString, uint64_t* out_address);
 
 #endif
