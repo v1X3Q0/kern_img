@@ -67,6 +67,7 @@ public:
     size_t resolveRel(size_t rebase);
     // under the condition that we have a live kernel, translation routine.
 
+    int get_bitness() { return bitness; };
     bool is_live_kernel() { return live_kernel; };
     int kernel_search(search_set* getB, size_t img_var, size_t img_var_sz, bool volatile_region, void** out_img_off);
     int kernel_search(search_set* getB, size_t img_var, size_t img_var_sz, void** out_img_off);
@@ -88,7 +89,7 @@ public:
 
     // to be used for actual construction
     template <typename kern_dist>
-    static kern_dist* allocate_kern_img(const char* kern_file)
+    static kern_dist* allocate_kern_img(const char* kern_file, int bitness_a=(sizeof(void*) * 8))
     {
         kern_dist* result = 0;
         void* binBegin_l = 0;
@@ -96,7 +97,7 @@ public:
 
         SAFE_BAIL(block_grab(kern_file, &binBegin_l, &kernSz_l) == -1);
 
-        result = new kern_dist((uint32_t*)binBegin_l, kernSz_l);
+        result = new kern_dist((uint32_t*)binBegin_l, kernSz_l, bitness_a);
         SAFE_BAIL(result->parseAndGetGlobals() == -1);
 
         goto finish;
@@ -142,10 +143,12 @@ public:
 
     // not live kernel constructors, we have the size and such cause we allocated it
     kernel_block(uint32_t* binBegin_a, size_t kern_sz_a) : binBegin((size_t)binBegin_a), kern_sz(kern_sz_a), live_kernel(false) {};
+    kernel_block(uint32_t* binBegin_a, size_t kern_sz_a, int bitness_a) : kernel_block(binBegin_a, kern_sz_a) { bitness = bitness_a; };
 protected:
     size_t binBegin;
     const bool live_kernel;
     size_t kern_sz;
+    int bitness;
 #ifdef __METALKIT__
 public:
 #endif
@@ -155,7 +158,7 @@ public:
 protected:
 #endif
     // kernel_block(uint32_t* binBegin_a, size_t kern_sz_a) : binBegin((size_t)binBegin_a), kern_sz((size_t)kern_sz_a), live_kernel(false) {};
-    kernel_block(const char* kern_file) : live_kernel(false) {};
+    kernel_block(const char* kern_file) : live_kernel(false), bitness(sizeof(void*) * 8) {};
 
     // this vector is for validating that a request is for a block that is already mapped
     std::vector<real_kmap_t*> kmap_list;
