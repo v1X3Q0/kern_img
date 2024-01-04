@@ -11,6 +11,16 @@ set(SOURCES_LIST
 
 list(APPEND SOURCES_LIST pak_kallsym.cpp)
 
+# ===========================================
+# ============ toolchain arch ===============
+# ===========================================
+if (ARCH MATCHES "arm64" OR ARCH MATCHES "arm64e" OR ARCH MATCHES "aarch64")
+    set(COMP_DEFS SUPPORT_AARCH64=1)
+# I believe windows does AMD64 and linux does x86_64
+elseif(ARCH MATCHES "AMD64" OR ARCH MATCHES "i386" OR ARCH MATCHES "x86_64")
+    set(COMP_DEFS SUPPORT_X86_64=1)
+endif()
+
 if (NOT ${MY_HOST_COMPILER} MATCHES "linux")
     set(NOLIVE 1)
 endif()
@@ -28,6 +38,9 @@ if (NOT ${MY_HOST_COMPILER} MATCHES "linux")
 endif()
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES_LIST})
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE ${COMP_DEFS})
+
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${LOCAL_INCLUDES})
 

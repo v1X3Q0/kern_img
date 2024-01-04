@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <elf.h>
+#include <string>
+#include <map>
 
-#include <ibeSet.h>
 #include <localUtil.h>
 #include <localUtil_linux.h>
 

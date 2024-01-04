@@ -24,9 +24,11 @@ endif()
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/common)
 
-if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Metalkit")
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR ${CMAKE_SYSTEM_NAME} MATCHES "Android")
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/linux)
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/windows)
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/xnu)
 endif()
 
