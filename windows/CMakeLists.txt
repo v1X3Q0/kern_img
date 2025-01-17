@@ -5,9 +5,7 @@ project(kern_windows)
 # kernel's but android doesn't. so kern_static will be omitted
 # from the android build. linux also seems to follow this
 # convention
-set(SOURCES_LIST
-    kern_img.cpp
-    )
+set(SOURCES_LIST kern_img.cpp)
 
 list(APPEND SOURCES_LIST kern_static.cpp)
 
@@ -28,6 +26,5 @@ if (NOT ${MY_HOST_COMPILER} MATCHES "windows")
 endif()
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES_LIST})
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${LOCAL_INCLUDES})
+target_include_directories(${PROJECT_NAME} PRIVATE ${LOCAL_INCLUDES})
 
