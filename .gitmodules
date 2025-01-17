@@ -1,0 +1,12 @@
+[submodule "common/local_util"]
+	path = common/local_util
+	url = https://github.com/v1X3Q0/local_util.git
+[submodule "common/bgrep_c"]
+	path = common/bgrep_c
+	url = https://github.com/v1X3Q0/bgrep_c.git
+[submodule "common/c_reginst"]
+	path = common/c_reginst
+	url = https://github.com/v1X3Q0/c_reginst.git
+[submodule "linux/rwDrv"]
+	path = linux/rwDrv
+	url = https://github.com/v1X3Q0/rwDrv.git
