@@ -10,3 +10,6 @@
 [submodule "linux/rwDrv"]
 	path = linux/rwDrv
 	url = https://github.com/v1X3Q0/rwDrv.git
+[submodule "common/krw_util"]
+	path = common/krw_util
+	url = https://github.com/v1X3Q0/krw_util.git
