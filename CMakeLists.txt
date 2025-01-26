@@ -26,6 +26,13 @@ if(NOT DEFINED ANDROID_TOOL_BASE)
         message( FATAL_ERROR "need to be compiling from a valid host, can't be ${CMAKE_SYSTEM_NAME}" )
     endif()
 
+    # dynoffset for linux, then everything but metalkit
+    if (${MY_HOST_COMPILER} MATCHES "linux")
+        set(DYNDIR ${ANDROID_TOOL_BASE}/${MY_HOST_COMPILER}/${MY_HOST_COMPILER}_dyn_offset)
+    else()
+        set(DYNDIR ${ANDROID_TOOL_BASE}/${MY_HOST_COMPILER}/${RW_DRIVER}/${CMAKE_SYSTEM_NAME}_dyn_offset)
+    endif()
+
     if (NOT DEFINED ARCH)
         set(ARCH ${CMAKE_HOST_SYSTEM_PROCESSOR})
     endif()
