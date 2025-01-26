@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.15.0)
 # project(kern_img VERSION 0.1.0)
 
 if(NOT DEFINED ANDROID_TOOL_BASE)
