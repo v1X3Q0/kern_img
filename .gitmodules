@@ -16,3 +16,6 @@
 [submodule "xnu/rw_kext"]
 	path = xnu/rw_kext
 	url = http://192.168.77.136/mac/rw_kext.git
+[submodule "xnu/kernelresolver"]
+	path = xnu/kernelresolver
+	url = https://github.com/v1X3Q0/kernelresolver.git
