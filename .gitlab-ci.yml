@@ -25,3 +25,18 @@ build-mac:
     - cmake ..
     - make
 
+build-windows:
+  tags:
+    - windows
+  stage: build
+  variables:
+    GIT_SUBMODULE_STRATEGY: normal
+    GIT_SUBMODULE_DEPTH: 1
+  script:
+    - if (Test-Path build-out) { rmdir build-out -r -Force }
+    - mkdir -p build-out
+    - cd build-out
+    - cmake ..
+    - MSBuild.exe kern_img_top.sln
+
+
