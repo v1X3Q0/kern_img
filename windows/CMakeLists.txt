@@ -22,10 +22,9 @@ set(LOCAL_INCLUDES ${KERN_IMG_INCLUDES})
 list(APPEND LOCAL_INCLUDES .)
 
 if (NOT ${MY_HOST_COMPILER} MATCHES "windows")
-    list(APPEND LOCAL_INCLUDES
-        ${ANDROID_TOOL_BASE}/common/local_util/windows_compat
-        ${ANDROID_TOOL_BASE}/${MY_HOST_COMPILER}/${RW_DRIVER}/Windows_dyn_offset
-        )
+    list(APPEND LOCAL_INCLUDES ${ANDROID_TOOL_BASE}/common/local_util/windows_compat)
+elseif (${MY_HOST_COMPILER} MATCHES "windows")
+    list(APPEND LOCAL_INCLUDES ${ANDROID_TOOL_BASE}/${MY_HOST_COMPILER}/${RW_DRIVER}/Windows_dyn_offset)
 endif()
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES_LIST})
